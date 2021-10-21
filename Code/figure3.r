@@ -3,7 +3,7 @@ library(Seurat)
 library(ggplot2)
 library(ggpubr)
 library(gridExtra)
-setwd("Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate")
+
 A <- readRDS("Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate/Data/Integrated.rds")
 b <- A@assays$RNA@counts
 dim(b)
@@ -16,7 +16,7 @@ c$rowmeans <- as.numeric(c$rowmeans)
 c <- c[order(c$rowmeans,decreasing = F),]
 c$logCV2 <- log((as.numeric(c$SD)/(c$rowmeans))^2)
 c$logMean <- log(c$rowmeans)
-# plot(y = c$logCV2,x = c$logMean)
+plot(y = c$logCV2,x = c$logMean)
 
 
 ############ select the gene stars ##############
@@ -36,6 +36,7 @@ gene_star <- rownames(c)[ID]
 c[rownames(c) %in%c(gene_star,marker),]
 delta <- c()
 set.seed(1)
+
 selected_cell <- sample(colnames(b),size = 5000,replace = F)
 length(unique(selected_cell))
 subset_cell <- subset(A,cells = selected_cell)
@@ -105,17 +106,4 @@ png('Figure/Test.png',res = 600,height = 3000,width = 6000)
 pl[[1]]+pl[[2]]+pl[[3]]+pl[[4]]+p3c+ pl[[5]]+pl[[6]]+pl[[7]]+pl[[8]]+p3d+
 plot_layout(ncol = 5)
 dev.off()
-
-############### my own #############
-
-
-########## normalization attempt not working #########
-library(bestNormalize)
-truehist(df$Rank, nbins = 12)
-x<- df$Score
-BNobject <- bestNormalize(x)
-df$BNobject <- BNobject$x.t
-plot(density(BNobject$x.t))
-truehist(df$BNobject, nbins = 12)
-plot(density(df$Score))
 

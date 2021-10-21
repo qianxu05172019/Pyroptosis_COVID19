@@ -1,101 +1,147 @@
-setwd("Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate")
 library(Seurat)
 library(patchwork)
 library(ggplot2)
 library(harmony)
 library(ggpubr)
-library(dplyr)
-A <- readRDS("Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate/Integrated.PBMC.BALF.HealthyLung.rds")
-DimPlot(A)
+
+BALF <- readRDS('Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate/Data/BALF.rds')
+table(BALF$orig.ident)
+table(BALF$condition)
+table(BALF$celltype)
 
 
-A$Experiment
-BALF <- subset(A,cells = colnames(A)[A$Experiment %in% c('BALF')])
-fig1a1 <- DimPlot(BALF,group.by = 'harmony_cell_type')+xlab('UMAP 1')+ylab('UMAP 2')+ggtitle('')+ theme_classic()
-fig1a1
+healthy_lung <- readRDS("Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate/Data/healthy_lung2.rds")
+healthy_lung$celltype <- Idents(healthy_lung)
 
-DimPlot(A,group.by = 'harmony_cell_type',label = T,repel = T)
-A <- FindNeighbors(A)
-A <- FindClusters(A,resolution = 0.05)
-DimPlot(A,label = T,repel = T)
-all.markers <- FindAllMarkers(object = A)
-Top20 <- all.markers %>%
-  group_by(cluster) %>%
-  top_n(n = 20, wt = avg_log2FC)
-write.csv(Top20,'DE_top20.all.cluster.csv')
+blish <- readRDS('Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate/Data/blish2.rds')
+table(blish$Ventilated)
+blish$celltype <- blish$cell.type
+table(blish$celltype)
 
-plots <- VlnPlot(A, features = c("MS4A1",'CD79A',#b cell
-                                 'CD2','CD3G', # CD4 T
-                                 'IL1R2',# cDC
-                                 'CD24',#epithelial
-                                 'AQP9','LGMN',#macrophage
-                                 'OAS1','CD86','CCR2',# monocyte
-                                 'FUT4',#neutrophil
-                                 'GNLY'), #NK
-                group.by = 'harmony_cell_type',
-                 pt.size = 0, combine = FALSE)
-png('Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate/celltype_markers.png',res = 400,height = 7000,width = 7000)
-wrap_plots(plots = plots, ncol = 2)
-dev.off()
-FeaturePlot(A,c('FUT4'))
+################################# load data #############################################################
+A <- merge(BALF,healthy_lung)
+A <- merge(A,blish)
+dim(A)
+table(A$celltype)
+
+A <- NormalizeData(A)
+A <- FindVariableFeatures(A)
+A <- ScaleData(A)
+A <- RunPCA(A)
+A <- RunUMAP(A,dims = 1:20)
 
 
-B <- A
-DimPlot(B)
-B <- NormalizeData(B)
-B <- FindVariableFeatures(B)
-B <- ScaleData(B)
-B <- RunPCA(B)
-B <- RunUMAP(B,dims = 1:20)
-DimPlot(B)
-DimPlot(B,group.by = 'singler')
-Dimplot(B,group.by = 'singler')
-B <- FindNeighbors(B)
-B <- FindClusters(B,resolution = 0.05)
-DimPlot(B)
-all.markers <- FindAllMarkers(object = B)
-Top20 <- all.markers %>%
-  group_by(cluster) %>%
-  top_n(n = 20, wt = avg_log2FC)
-write.csv(Top20,'DE_top20.clustersofmacrophagelike.csv')
-table(Idents(B))
+A$Experiment <- NA
+A$Experiment[A$orig.ident %in% c('COV002','COV004','COV007','COV012','COV034','COV036')] <- 'BALF'
+A$Experiment[A$orig.ident %in% c("covid_555_1","covid_555_2","covid_556",
+                                 "covid_557" , "covid_558" , "covid_559" ,
+                                 "covid_560" , "covid_561",  "HIP002" , 
+                                 "HIP015" , "HIP023","HIP043",
+                                 "HIP044","HIP045")] <- 'PBMC'
+A$Experiment[A$orig.ident %in% c("Macrophage","NK cell", "CD4+ T cell" , "CD8+ T cell","B cell",
+                                 "Monocyte" ,"cDC")] <- 'Healthy lung'
+table(A$Experiment)
+table(A$celltype)
+A$celltype[A$celltype %in% c('NK','NK_cell','NK cell')] <- 'NK'
+A$celltype[A$celltype %in% c('Neutrophils','Neutrophil')] <- 'Neutrophil'
+A$celltype[A$celltype %in% c('B cell','B_cell')] <- 'B cell'
+A$harmony_condition <- NA
+A$harmony_condition[A$orig.ident %in% c('COV007','COV034','COV036')] <- 'severe'
+A$harmony_condition[A$orig.ident %in% c('COV002','COV004','COV012')] <- 'moderate'
+A$harmony_condition[A$Ventilated %in% c('Healthy')] <- 'Healthy'
+A$harmony_condition[A$Ventilated %in% c('NonVent')] <- 'moderate'
+A$harmony_condition[A$Ventilated %in% c('Vent')] <- 'severe'
+A$harmony_condition[A$orig.ident %in% c("Macrophage",
+                                        "NK cell","CD4+ T-cell",
+                                        "CD8+ T-cell" ,"B cell" , 
+                                        "cDC" )] <- 'Healthy'
+
+A <- RunHarmony(A,group.by.vars = 'Experiment')
+A <- RunUMAP(A,reduction = 'harmony',dims = 1:20)
+
+A <- readRDS("Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate/Data/Integrated.rds")
+################ P1A1 ######################################
+P1A1 <- DimPlot(A,group.by = 'celltype',label = T,repel = T,
+                cols = c('#d53e4f','#f46d43','#fdae61','#fee08b','#e6f598',
+                         '#abdda4','#66c2a5','#3288bd'))+xlab(' ')+ylab(' ')+
+  ggtitle('Integrated')
+P1B1 <- DimPlot(A,group.by = 'harmony_condition',cols = c("#1b9e77","#7570b3", "#d95f02"))+xlab(' ')+ylab(' ')+ggtitle('Integrated')
+P1B1
+################ P1A2 ######################################
+PBMC <- subset(A,cells = colnames(A)[colnames(A) %in% colnames(blish)])
+P1A2 <- DimPlot(PBMC,group.by = 'celltype',label = T,repel = T,
+                cols = c('#d53e4f','#f46d43' ,'#fee08b' ,'#abdda4','#66c2a5','#3288bd'))+xlab(' ')+ylab(' ')+ggtitle('PBMC')+NoLegend()+theme(panel.grid = element_blank())+
+  theme(axis.text = element_blank())+
+  theme(axis.ticks = element_blank())+
+  theme(panel.border = element_blank())+
+  theme(axis.line = element_blank())
+
+P1B2 <- DimPlot(PBMC,group.by = 'harmony_condition',cols = c("#1b9e77","#7570b3", "#d95f02"))+NoLegend()+xlab(' ')+ylab(' ')+
+  ggtitle('PBMC')+NoLegend()+theme(panel.grid = element_blank())+
+  theme(axis.text = element_blank())+
+  theme(axis.ticks = element_blank())+
+  theme(panel.border = element_blank())+
+  theme(axis.line = element_blank())
+P1B2
+################ P1A3 ######################################
+BALF <- subset(A,cells = colnames(A)[colnames(A) %in% colnames(BALF)])
+P1A3 <- DimPlot(BALF,group.by = 'celltype',label = T,repel = T,
+                cols = c(        '#f46d43','#fdae61','#fee08b',
+                                 '#e6f598',      '#66c2a5','#3288bd'))+
+                  xlab(' ')+ylab(' ')+ggtitle('BALF')+NoLegend()+theme(panel.grid = element_blank())+
+  theme(axis.text = element_blank())+
+  theme(axis.ticks = element_blank())+
+  theme(panel.border = element_blank())+
+  theme(axis.line = element_blank())
 
 
-setwd("Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate")
-A <- readRDS("Integrated.PBMC.BALF.HealthyLung.rds")
-library(SingleR)
-library(celldex)
-library(SingleCellExperiment)
-ref <- BlueprintEncodeData()
-sce <- A@assays$RNA@data
-pretend.cell.labels <- sample(letters, ncol(sce), replace=TRUE)
-pretend.gene.lengths <- sample(10000, nrow(sce),replace=TRUE)
+P1B3 <- DimPlot(BALF,group.by = 'harmony_condition',cols = c( "#7570b3", "#d95f02"))+
+  xlab(' ')+ylab(' ')+ggtitle('BALF')+theme(panel.grid = element_blank())+NoLegend()+
+  theme(axis.text = element_blank())+
+  theme(axis.ticks = element_blank())+
+  theme(panel.border = element_blank())+
+  theme(axis.line = element_blank())
+P1B3 
+################ P1A4 ######################################
+healthy_lung <- subset(A,cells = colnames(A)[colnames(A) %in% colnames(healthy_lung)])
+P1A4 <- DimPlot(healthy_lung,group.by = 'celltype',label = T,repel = T,
+                cols = c('#d53e4f','#f46d43','#fdae61', '#e6f598','#3288bd'))+xlab(' ')+ylab(' ')+NoLegend()+
+  ggtitle('Healthy lung')+NoLegend()+theme(panel.grid = element_blank())+
+  theme(axis.text = element_blank())+
+  theme(axis.ticks = element_blank())+
+  theme(panel.border = element_blank())+
+  theme(axis.line = element_blank())
 
-sce <- SingleCellExperiment(list(counts=A@assays$RNA@counts,logcounts = A@assays$RNA@data),
-                            colData=DataFrame(label=pretend.cell.labels),
-                            rowData=DataFrame(length=pretend.gene.lengths),
-                            metadata=list(study="Integrated")
-)
+P1B4 <- DimPlot(healthy_lung,group.by = 'harmony_condition',
+                cols = c("#1b9e77"))+xlab(' ')+ylab(' ')+
+  ggtitle('Healthy lung')+NoLegend()+theme(panel.grid = element_blank())+
+  theme(axis.text = element_blank())+
+  theme(axis.ticks = element_blank())+
+  theme(panel.border = element_blank())+
+  theme(axis.line = element_blank())
+P1B4
 
-pred <- SingleR(test=sce, ref=ref, labels=ref$label.main)
-table(pred$labels)
-
-A$singler <- pred$labels[match(colnames(A),rownames(pred))]
-DimPlot(A,group.by = 'singler',label = T)
-table(A$singler)
-A <- A[,A$singler %in% c('DC','Macrophages','Monocytes','Neutrophils','B-cells','CD4+ T-cells',
-                         'CD8+ T-cells','Epithelial cells','NK cells')]
-DimPlot(A,group.by = 'singler',label = T)
-DimPlot(A,group.by = 'Experiment')
-
-plots <- VlnPlot(A, features = c("CASP1",'GSDMD','IL18',
-                                 'IL1B','CASP8',
-                                 'CASP4','NINJ1','TLR4','NLRP3',
-                                 'NLRC4','ACTB','PPIA')
-                 ,split.by = "harmony_condition",group.by = 'harmony_cell_type',
-                 pt.size = 0, combine = FALSE)
-png('Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate/singleR/py_markers_harmony_Ventilated_1.png',res = 400,height = 7000,width = 7000)
+################ P1B ######################################
+plots <- VlnPlot(A, features = c("CASP1",'CASP4','PYCARD')
+                 ,split.by = "harmony_condition",group.by = 'celltype',
+                 pt.size = 0, combine = F,cols = c("#1b9e77","#7570b3", "#d95f02"))
+P1C1 <- wrap_plots(plots = plots, ncol = 3)
 wrap_plots(plots = plots, ncol = 3)
-dev.off()
-pred$scores
 
+
+plots <- VlnPlot(A, features = c('IL1B','NINJ1','GSDMD'),split.by = "harmony_condition",group.by = 'celltype',
+pt.size = 0, combine = F,cols = c( "#1b9e77","#7570b3", "#d95f02"))
+P1C2 <- wrap_plots(plots = plots, ncol = 3)
+
+plots <- VlnPlot(A, features = c('TLR2','NLRC5','PPIA'),split.by = "harmony_condition",group.by = 'celltype',
+                 pt.size = 0, combine = F,cols = c( "#1b9e77","#7570b3", "#d95f02"))
+P1C3 <- wrap_plots(plots = plots, ncol = 3)
+P1C3
+
+# png('Figure/Fig1.png',res = 600,height = 11000,width = 9000)
+# (P1A1|P1A2|P1A3|P1A4) /
+#   (P1B1|P1B2|P1B3|P1B4)/
+# P1C1/P1C2/P1C3
+# dev.off()
+
+#saveRDS(A,'Data/Integrated.rds')

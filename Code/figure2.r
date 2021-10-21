@@ -1,7 +1,6 @@
 A <- readRDS("Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate/Data/Integrated.rds")
 ##################################################################################################
 
-setwd("Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate")
 library(Seurat)
 library(patchwork)
 library(ggplot2)
@@ -12,7 +11,6 @@ library(fgsea)
 library(viridis)
 library(Nebulosa)
 BIOP <- gmtPathways('https://maayanlab.cloud/Enrichr/geneSetLibrary?mode=text&libraryName=BioPlanet_2019')
-A <- readRDS("Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate/Data/Integrated.rds")
 table(A$harmony_condition)
 table(A$celltype)
 
