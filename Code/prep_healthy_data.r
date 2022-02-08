@@ -18,8 +18,6 @@ ad_macrophage <- CreateSeuratObject(ad_macrophage,project = 'Macrophage')
 saveRDS(ad_macrophage,file = 'Healthymacrophage.rds')
 
 rm(ad_macrophage)
-
-
 set.seed(111)
 NK <- rownames(meta)[meta$CellType %in% c('NK')]
 NK <- sample(x = NK, size = 800, replace = F)
@@ -61,28 +59,6 @@ ad_B_cells <- CreateSeuratObject(ad_B_cells,project = 'B cell')
 saveRDS(ad_B_cells,file = 'HealthyB_cells.rds')
 rm(ad_B_cells)
 
-# Monocyte <- rownames(meta)[meta$CellType %in% c('Monocyte')]
-# length(Monocyte)
-# set.seed(111)
-# Monocyte <- sample(x=Monocyte,size = 800,replace = F)
-# ad_Monocyte <- ad[rownames(ad) %in% Monocyte,]
-# ad_Monocyte <- as.matrix(ad_Monocyte)
-# ad_Monocyte <- t(ad_Monocyte)
-# ad_Monocyte <- CreateSeuratObject(ad_Monocyte,project = 'Monocyte')
-# saveRDS(ad_Monocyte,file = 'HealthyMonocyte.rds')
-# rm(ad_Monocyte)
-
-DC <- rownames(meta)[meta$CellType %in% c('DC_1','DC_2','DC_activated','DC_Monocyte_Dividing')]
-set.seed(111)
-DC <- sample(x=DC,size = 800,replace = F)
-ad_DC <- ad[rownames(ad) %in% DC,]
-ad_DC <- as.matrix(ad_DC)
-ad_DC <- t(ad_DC)
-ad_DC <- CreateSeuratObject(ad_DC,project = 'cDC')
-saveRDS(ad_DC,file = 'HealthyDC.rds')
-rm(ad_DC)
-
-
 Healthymacrophage <- readRDS("Z:/Cailab/Qian_writting/pyroptosis_covid/healthy_lung_upper_airway/Healthymacrophage.rds")
 HealthyNK <- readRDS("Z:/Cailab/Qian_writting/pyroptosis_covid/healthy_lung_upper_airway/HealthyNK.rds")
 A <- merge(Healthymacrophage,HealthyNK )
@@ -96,9 +72,6 @@ rm(HealthyT_CD8_CytT)
 HealthyB_cells <- readRDS("Z:/Cailab/Qian_writting/pyroptosis_covid/healthy_lung_upper_airway/HealthyB_cells.rds")
 A <- merge(A,HealthyB_cells)
 rm(HealthyB_cells)
-HealthyDC <- readRDS("Z:/Cailab/Qian_writting/pyroptosis_covid/healthy_lung_upper_airway/HealthyDC.rds")
-A <- merge(A,HealthyDC)
-rm(HealthyDC)
 
 A <- NormalizeData(A)
 A <- FindVariableFeatures(A)
@@ -107,17 +80,6 @@ A <- RunPCA(A)
 A <- RunUMAP(A,dims=1:50)
 DimPlot(A,label = T,repel = T)
 table(A$orig.ident)
-saveRDS(A,file = 'Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate/Data/healthy_lung.rds')
-
-plots <- VlnPlot(A, features = c("CASP1",'GSDMD','IL18',
-                                   'IL1B','LDHA',
-                                   'CASP4','NINJ1','TLR4',
-                                   'PYCARD',
-                                   'GAPDH','ACTB','PPIA')
-                 ,group.by = 'orig.ident',
-                 pt.size = 0, combine = FALSE)
-png('Z:/Cailab/Qian_writting/pyroptosis_covid/healthy_lung_upper_airway/py_marker2.png',res = 400,height = 7000,width = 7000)
-wrap_plots(plots = plots, ncol = 3)
-dev.off()
+saveRDS(A,file = 'Z:/Cailab/Qian_writting/pyroptosis_covid/Integrate/Data/healthy_lung2.rds')
 
 
