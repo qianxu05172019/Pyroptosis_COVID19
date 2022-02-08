@@ -16,7 +16,6 @@ ad_macrophage <- as.matrix(ad_macrophage)
 ad_macrophage <- t(ad_macrophage)
 ad_macrophage <- CreateSeuratObject(ad_macrophage,project = 'Healthy macrophage')
 saveRDS(ad_macrophage,file = 'Healthymacrophage.rds')
-
 rm(ad_macrophage)
 
 set.seed(111)
@@ -27,7 +26,6 @@ ad_NK <- as.matrix(ad_NK)
 ad_NK <- t(ad_NK)
 ad_NK <- CreateSeuratObject(ad_NK,project = 'Healthy NK')
 saveRDS(ad_NK,file = 'HealthyNK.rds')
-dim(ad_NK)
 rm(ad_NK)
 
 set.seed(111)
@@ -83,8 +81,6 @@ rm(ad_DC)
 
 
 Healthymacrophage <- readRDS("Z:/Cailab/Qian_writting/pyroptosis_covid/healthy_lung_upper_airway/Healthymacrophage.rds")
-#HealthyFibroblast <- readRDS("Z:/Cailab/Qian_writting/pyroptosis_covid/healthy_lung_upper_airway/HealthyFibroblast.rds")
-#A <- merge(Healthymacrophage,HealthyFibroblast)
 A <- Healthymacrophage
 rm(Healthymacrophage,HealthyFibroblast)
 HealthyNK <- readRDS("Z:/Cailab/Qian_writting/pyroptosis_covid/healthy_lung_upper_airway/HealthyNK.rds")
@@ -111,6 +107,4 @@ A <- FindVariableFeatures(A)
 A <- ScaleData(A)
 A <- RunPCA(A)
 A <- RunUMAP(A,dims=1:50)
-DimPlot(A)
-table(A$orig.ident)
 saveRDS(A,file = 'healthy_lung.rds')
