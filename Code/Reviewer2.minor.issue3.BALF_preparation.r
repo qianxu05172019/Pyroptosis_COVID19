@@ -109,16 +109,4 @@ A <-  FindNeighbors(A)
 A <- FindClusters(A,resolution = 0.1)
 A <- RunUMAP(A,dims = 1:20)
 saveRDS(A,file='Z:/Cailab/Qian_writting/pyroptosis_covid/BALF/all.rds')
-A <- readRDS('Z:/Cailab/Qian_writting/pyroptosis_covid/BALF/all.rds')
-UMAPPlot(A,group.by='orig.ident')+xlab('UMAP 1')+ylab('UMAP 2')+theme_bw()
 
-
-A <- RunHarmony(A,group.by.vars = 'orig.ident')
-A <- RunUMAP(A,reduction = 'harmony',dims = 1:20)
-
-DimPlot(A)
-DimPlot(A,group.by = 'orig.ident')
-A$condition <- NA
-A$condition[which(A$orig.ident %in% c('COV002','COV004','COV012'))] <- 'Recovered'
-A$condition[which(A$orig.ident %in% c('COV007','COV034','COV036'))] <- 'Dead'
-DimPlot(A,group.by = 'condition')+xlab('UMAP 1')+ylab('UMAP 2')+theme_bw()
