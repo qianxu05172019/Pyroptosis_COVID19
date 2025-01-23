@@ -1,42 +1,52 @@
 
-# Bioinformatics Analysis of scRNA-seq Data
+# Single-Cell Transcriptome Analysis for Pyroptosis in COVID-19
 
 ## Project Overview
 
-This project demonstrates a comprehensive workflow for analyzing single-cell RNA sequencing (scRNA-seq) data. It encompasses data preprocessing, visualization, and advanced analysis techniques to understand cell type distributions, differential gene expression, and condition-specific responses.
+This repository hosts the R scripts and workflows used in our study on pyroptosis in COVID-19, as detailed in our published paper. These scripts cover data preprocessing, analysis, and visualization techniques that underpin our findings on the role of pyroptosis in COVID-19 severity.
 
-## Dependencies
+## Tools and Techniques
 
-The project relies on the following R packages for data analysis:
+### Data Handling and Analysis
+- **Dimensionality Reduction**: Utilized **Seurat** for principal component analysis (PCA) and uniform manifold approximation and projection (UMAP).
+- **Data Integration**: Employed **Harmony** to integrate datasets from multiple studies to minimize batch effects and enhance comparability.
 
-- **Seurat**: For preprocessing and analysis of scRNA-seq data.
-- **ggplot2**: For advanced graphical representations.
-- **dplyr**: For data manipulation.
-- **patchwork**: For arranging plots.
-- **harmony**: For integrating datasets from different conditions.
-- **fgsea**: For gene set enrichment analysis.
-- **Nebulosa**: For visualization of gene expression density.
+### Visualization
+- **Graphical Representations**: Leveraged **ggplot2** for generating expressive data visualizations.
+- **Plot Arrangements**: Used **patchwork** to effectively arrange multiple plots in a cohesive layout.
+
+### Statistical and Enrichment Analysis
+- **Statistical Testing**: Applied functions from **Seurat** and **dplyr** for subsetting, normalizing, and statistically analyzing single-cell datasets.
+- **Enrichment Analysis**: Conducted gene set enrichment analysis using **fgsea** to identify crucial biological pathways involved in the condition.
 
 ## Repository Structure
 
-- `scripts/`: Contains all R scripts used for data analysis.
-  - `prep_data.r`: Scripts for data preparation and normalization.
-  - `analysis.r`: Scripts for conducting various analyses, including clustering and differential expression.
-  - `visualizations.r`: Scripts for generating plots and figures to visualize findings.
-- `data/`: Directory for raw and processed data files.
-- `results/`: Output directory for analysis results and figures.
+- `Code/`: Contains all R scripts for analysis.
+  - `calculate_pyroptosis.r`: Scripts for calculating pyroptosis scores.
+  - `figure*.r`: Scripts for generating figures illustrating the analysis.
+  - `prep_*.r`: Scripts for data preprocessing from various data sources.
+  - `reply_to_reviewers/`: Responses and revisions based on peer review.
+- `data/`: Directory for raw and processed data files (as referenced in the scripts).
+- `results/`: Output directory for results including statistical summaries and figures.
 
-## Usage
+## Getting Started
 
-To replicate the analysis:
-1. Install all required R packages.
-2. Run the scripts in the `scripts/` directory in order.
-3. Check the `results/` directory for output and figures.
+To run these analyses:
+1. Ensure R and all required packages are installed.
+2. Clone this repository.
+3. Execute scripts within the `Code/` directory in sequential order as listed.
 
-## Contributing
+## Contributions
 
-Contributions to this project are welcome. Please fork the repository and submit a pull request with your suggested changes.
+Contributions are welcome. Please fork the repository and submit pull requests with any enhancements. For major changes, open an issue first to discuss what you would like to change.
+
+## Citation
+
+If you utilize this repository, please cite the associated publication:
+```
+Xu, Q., Yang, Y., Zhang, X., & Cai, J. J. (2022). Association of pyroptosis and severeness of COVID-19 as revealed by integrated single-cell transcriptome data analysis. ImmunoInformatics, 6, 100013.
+```
 
 ## License
 
-This project is available under the MIT License. See the LICENSE file for more information.
+This project is open-sourced under the MIT License.
