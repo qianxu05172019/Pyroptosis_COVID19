@@ -22,6 +22,7 @@ This repository hosts the R scripts and workflows used in our study on pyroptosi
 ### Statistical and Enrichment Analysis
 - **Statistical Testing**: Applied functions from **Seurat** and **dplyr** for subsetting, normalizing, and statistically analyzing single-cell datasets.
 - **Enrichment Analysis**: Conducted gene set enrichment analysis using **fgsea** to identify crucial biological pathways involved in the condition.
+![Statistical testing](1-s2.0-S2667119022000052-gr3_lrg.jpg)
 
 ## Repository Structure
 
