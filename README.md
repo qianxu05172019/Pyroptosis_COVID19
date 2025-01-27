@@ -14,6 +14,8 @@ This repository hosts the R scripts and workflows used in our study on pyroptosi
 ### Visualization
 - **Graphical Representations**: Leveraged **ggplot2** for generating expressive data visualizations.
 - **Plot Arrangements**: Used **patchwork** to effectively arrange multiple plots in a cohesive layout.
+![Pyroptosis in COVID-19](images/1-s2.0-S2667119022000052-gr1_lrg.jpg)
+
 
 ### Statistical and Enrichment Analysis
 - **Statistical Testing**: Applied functions from **Seurat** and **dplyr** for subsetting, normalizing, and statistically analyzing single-cell datasets.
