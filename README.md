@@ -3,7 +3,7 @@
 
 ## Project Overview
 
-This repository hosts the R scripts and workflows used in our study on pyroptosis in COVID-19, as detailed in our published paper. These scripts cover data preprocessing, analysis, and visualization techniques that underpin our findings on the role of pyroptosis in COVID-19 severity.
+This repository hosts the R scripts and workflows used in our study on pyroptosis in COVID-19, as detailed in our published paper [View Article](https://www.sciencedirect.com/science/article/pii/S2667119022000052). These scripts cover data preprocessing, analysis, and visualization techniques that underpin our findings on the role of pyroptosis in COVID-19 severity.
 
 ## Tools and Techniques
 
