@@ -10,7 +10,7 @@ This repository hosts the R scripts and workflows used in our study on pyroptosi
 ### Data Handling and Analysis
 - **Dimensionality Reduction**: Utilized **Seurat** for principal component analysis (PCA) and uniform manifold approximation and projection (UMAP).
 - **Data Integration**: Employed **Harmony** to integrate datasets from multiple studies to minimize batch effects and enhance comparability.
-![Pyroptosis in COVID-19](images/1-s2.0-S2667119022000052-gr1_lrg.jpg)
+![Pyroptosis in COVID-19](1-s2.0-S2667119022000052-gr1_lrg.jpg)
 
 
 ### Visualization
